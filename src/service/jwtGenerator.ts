@@ -7,7 +7,7 @@ export default class JwtGenerator {
     public async getJwtTokenForUserResourcesAsync(content: any): Promise<any> {
         return await jwt.sign(
             {
-                exp: Math.floor(Date.now() / 1000) + (15 * 60), // 15 min expiration
+                exp: Math.floor(Date.now() / 1000) + (1 * 60), // 15 min expiration
                 data: content
             }, this._secretKey)
     }
@@ -15,7 +15,7 @@ export default class JwtGenerator {
     public async getJwtRefreshToken(content: any): Promise<any> {
         return await jwt.sign(
             {
-                exp: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60), // 15 min expiration
+                exp: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60), // 30 day expiration
                 data: {
                     id: content.id,
                     email: content.email

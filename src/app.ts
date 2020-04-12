@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 
@@ -12,6 +13,7 @@ initFirebase()
 const port = Number.parseFloat(process.env.PORT) || 3000;
 
 const app = express();
+app.use(cors())
 app.use(bodyParser.json())
 
 const router = express.Router()

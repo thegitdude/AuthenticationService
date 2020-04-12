@@ -3,7 +3,7 @@ import AuthMiddleware from '../service/authMiddleware';
 import { HttpContext } from '../types/context';
 
 export interface IRouter {
-    registerRoutes(router: any): void 
+    registerRoutes(router: any): void
 }
 
 export class BaseRouter {
@@ -16,11 +16,11 @@ export class BaseRouter {
         this._authMiddleware = new AuthMiddleware()
     }
 
-    addWithAuthorization = (router: Router, route: string, httpActionType: string, callback: Function, authRole: string = null) => {
+    addWithAuthorization = async (router: Router, route: string, httpActionType: string, callback: Function, authRole: string = null) => {
         let executor: any = this.executeWithContextAsync
         if(authRole)
-            executor = this.executeWithAuthAsync
-        
+            executor = await this.executeWithAuthAsync
+
         switch (httpActionType) {
             case 'GET':
                 router.get(`${this._routePrefix}${route}`, (req, res, next, role = authRole) => executor(req, res, next, role), (req, res) => callback(req, res))
@@ -42,7 +42,7 @@ export class BaseRouter {
             req,
             res
         } as HttpContext
-        
+
         next()
     }
 
