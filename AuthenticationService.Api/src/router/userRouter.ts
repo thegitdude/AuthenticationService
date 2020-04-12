@@ -13,7 +13,7 @@ export default class UserRouter extends BaseRouter implements IRouter {
         this.addWithAuthorization(router, '', 'GET', this.getUsersAsync, 'canReadUsers')
 
         this.addWithAuthorization(router, '/:userId', 'GET', this.getUserAsync, 'canReadUsers')
-   
+
         this.addWithAuthorization(router, '/:userId', 'PUT', this.updateUserAsync, 'canUpdateUsers')
     }
 
@@ -33,7 +33,7 @@ export default class UserRouter extends BaseRouter implements IRouter {
         const user = this._context.req.body
         this.validateRequiredParam(userId, 'Invalid user id provided.')
         this.validateRequiredParam(user, 'Invalid user provided.')
-        
+
         await this.executeWithHttpActionResult(async () => await this._userService.updateUserAsync(userId, user))
     }
 }

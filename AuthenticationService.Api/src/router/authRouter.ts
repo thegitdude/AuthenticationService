@@ -14,6 +14,8 @@ export default class AuthRouter extends BaseRouter implements IRouter {
         this.addWithAuthorization(router, `/signin`, 'POST', this.signInAsync)
 
         this.addWithAuthorization(router, `/refreshToken`, 'POST', this.refreshTokenAsync)
+
+        this.addWithAuthorization(router, `/roles`, 'GET', this.getRoles)
     }
 
     registerUserAsync = async () => {
@@ -27,29 +29,38 @@ export default class AuthRouter extends BaseRouter implements IRouter {
         this.validateRequiredParam(password, 'Please provide a password.')
 
         try {
-            var token = await this._userService.signInAsync(username, password)
-            this.ok(token)
+            const authResponse = await this._userService.signInAsync(username, password)
+            this.ok(authResponse)
         } catch (err) {
             this.unauthorised('SignIn failed!')
         }
     }
 
     refreshTokenAsync = async () => {
-        const username = this._context.req.body.refreshToken
-        this.validateRequiredParam(username, 'Please provide a refreshToken.')
+        const refreshToken = this._context.req.body.refreshToken
+        this.validateRequiredParam(refreshToken, 'Please provide a refreshToken.')
 
         try {
-            const token = await this._userService.refreshAccessTokenAsync(username)
+            const token = await this._userService.refreshAccessTokenAsync(refreshToken)
+            console.log(token)
             this.ok(token)
         } catch (err) {
             this.unauthorised('SignIn failed!')
-        } 
+        }
     }
 
     resetPasswordAsync = async () => {
         const email = this._context.req.body.email
-        this.validateRequiredParam(email, 'Please provide an email address')        
+        this.validateRequiredParam(email, 'Please provide an email address')
 
         this.executeWithHttpActionResult(async () => await this._userService.resetPasswordAsync(email))
+    }
+
+    getRoles = () => {
+        try {
+            this.ok(this._userService.getRoles())
+        } catch (err) {
+            this.unauthorised('SignIn failed!')
+        }
     }
 }
