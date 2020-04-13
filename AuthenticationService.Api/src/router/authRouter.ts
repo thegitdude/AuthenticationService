@@ -1,5 +1,6 @@
 import { IRouter, BaseRouter } from "./baseRouter";
 import UserService from "../service/userService";
+import HttpContextHelper from '../router/httpContextHelper'
 
 export default class AuthRouter extends BaseRouter implements IRouter {
     private readonly _userService = new UserService()
@@ -18,49 +19,50 @@ export default class AuthRouter extends BaseRouter implements IRouter {
         this.addWithAuthorization(router, `/roles`, 'GET', this.getRoles)
     }
 
-    registerUserAsync = async () => {
-        await this.executeWithHttpActionResult(async () => await this._userService.registerUserAsync(this._context.req.body))
+    registerUserAsync = async (helper: HttpContextHelper) => {
+        await helper.executeWithHttpActionResult(async () => await this._userService.registerUserAsync(helper.context.req.body))
     }
 
-    signInAsync = async () => {
-        const username = this._context.req.body.username
-        const password = this._context.req.body.password
-        this.validateRequiredParam(username, 'Please provide a username.')
-        this.validateRequiredParam(password, 'Please provide a password.')
+    signInAsync = async (helper: HttpContextHelper) => {
+        const username = helper.context.req.body.username
+        const password = helper.context.req.body.password
+
+        helper.validateRequiredParam(username, 'Please provide a username.')
+        helper.validateRequiredParam(password, 'Please provide a password.')
 
         try {
             const authResponse = await this._userService.signInAsync(username, password)
-            this.ok(authResponse)
+            helper.ok(authResponse)
         } catch (err) {
-            this.unauthorised('SignIn failed!')
+            helper.unauthorised('SignIn failed!')
         }
     }
 
-    refreshTokenAsync = async () => {
-        const refreshToken = this._context.req.body.refreshToken
-        this.validateRequiredParam(refreshToken, 'Please provide a refreshToken.')
+    refreshTokenAsync = async (helper: HttpContextHelper) => {
+        const refreshToken = helper.context.req.body.refreshToken
+        helper.validateRequiredParam(refreshToken, 'Please provide a refreshToken.')
 
         try {
             const token = await this._userService.refreshAccessTokenAsync(refreshToken)
-            console.log(token)
-            this.ok(token)
+
+            helper.ok(token)
         } catch (err) {
-            this.unauthorised('SignIn failed!')
+            helper.unauthorised('SignIn failed!')
         }
     }
 
-    resetPasswordAsync = async () => {
-        const email = this._context.req.body.email
-        this.validateRequiredParam(email, 'Please provide an email address')
+    resetPasswordAsync = async (helper: HttpContextHelper) => {
+        const email = helper.context.req.body.email
+        helper.validateRequiredParam(email, 'Please provide an email address')
 
-        this.executeWithHttpActionResult(async () => await this._userService.resetPasswordAsync(email))
+        helper.executeWithHttpActionResult(async () => await this._userService.resetPasswordAsync(email))
     }
 
-    getRoles = () => {
+    getRoles = (helper: HttpContextHelper) => {
         try {
-            this.ok(this._userService.getRoles())
+            helper.ok(this._userService.getRoles())
         } catch (err) {
-            this.unauthorised('SignIn failed!')
+            helper.unauthorised('SignIn failed!')
         }
     }
 }

@@ -1,5 +1,4 @@
 import * as jwt from 'jsonwebtoken'
-import { User } from '../types/user'
 
 export default class JwtGenerator {
     private _secretKey: string = '288502b9-d8b2-4767-ae0a-9f3f520c8b30'
@@ -7,7 +6,7 @@ export default class JwtGenerator {
     public async getJwtTokenForUserResourcesAsync(content: any): Promise<any> {
         return await jwt.sign(
             {
-                exp: Math.floor(Date.now() / 1000) + (1 * 60), // 15 min expiration
+                exp: Math.floor(Date.now() / 1000) + (15 * 60), // 15 min expiration
                 data: content
             }, this._secretKey)
     }

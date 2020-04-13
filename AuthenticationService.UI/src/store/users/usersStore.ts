@@ -1,5 +1,5 @@
 import { ActionTree, MutationTree } from 'vuex'
-import { getAsync } from '@/server/adaptor'
+import { getAsync, get } from '@/server/adaptor'
 
 const state = {
     users: [],
@@ -22,7 +22,7 @@ const actions: ActionTree<any, any> = {
     },
 
     async getUser(context: any, payload: string) {
-        getAsync(`users/${payload}`)
+        get(`users/${payload}`)
         .then(result => {
             context.commit('setUser', result)
             context.dispatch('auth/getRoles', null, { root: true })
