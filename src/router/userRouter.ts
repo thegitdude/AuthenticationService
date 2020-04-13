@@ -1,6 +1,7 @@
 import { Router } from "express-serve-static-core";
 import { IRouter, BaseRouter } from "./baseRouter";
 import UserService from "../service/userService";
+import HttpContextHelper from '../router/httpContextHelper'
 
 export default class UserRouter extends BaseRouter implements IRouter {
     private readonly _userService = new UserService()
@@ -17,23 +18,23 @@ export default class UserRouter extends BaseRouter implements IRouter {
         this.addWithAuthorization(router, '/:userId', 'PUT', this.updateUserAsync, 'canUpdateUsers')
     }
 
-    getUsersAsync = async () => {
-        await this.executeWithHttpActionResult(async () => await this._userService.getUsersAsync());
+    getUsersAsync = async (helper: HttpContextHelper) => {
+        await helper.executeWithHttpActionResult(async () => await this._userService.getUsersAsync());
     }
 
-    getUserAsync = async () => {
-        const userId = this._context.req.params.userId
-        this.validateRequiredParam(userId, 'Invalid user id provided.')
+    getUserAsync = async (helper: HttpContextHelper) => {
+        const userId = helper.context.req.params.userId
+        helper.validateRequiredParam(userId, 'Invalid user id provided.')
 
-        await this.executeWithHttpActionResult(async () => await this._userService.getUserAsync(userId))
+        await helper.executeWithHttpActionResult(async () => await this._userService.getUserAsync(userId))
     }
 
-    updateUserAsync = async () => {
-        const userId = this._context.req.params.userId
-        const user = this._context.req.body
-        this.validateRequiredParam(userId, 'Invalid user id provided.')
-        this.validateRequiredParam(user, 'Invalid user provided.')
+    updateUserAsync = async (helper: HttpContextHelper) => {
+        const userId = helper.context.req.params.userId
+        const user = helper.context.req.body
+        helper.validateRequiredParam(userId, 'Invalid user id provided.')
+        helper.validateRequiredParam(user, 'Invalid user provided.')
 
-        await this.executeWithHttpActionResult(async () => await this._userService.updateUserAsync(userId, user))
+        await helper.executeWithHttpActionResult(async () => await this._userService.updateUserAsync(userId, user))
     }
 }
